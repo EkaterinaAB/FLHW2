@@ -17,6 +17,9 @@ class Automaton:
         
     def accepts(self):
         current_states = [tuple(sorted(list(self.start_states)))]
+        for i in self.transitions:
+            print(i)
+        quit()
         new_current_states = []
         while len(current_states)!=0:
             for symbol in range (self.m):
@@ -47,17 +50,17 @@ def read_automaton(file_path):
         for line in lines[4:]:
             parts = list(map(int, line.split()))
             state, symbol, next_state = parts[0], parts[1], parts[2]
-            if (set(state), symbol) not in transitions:
-                transitions[(set(state), symbol)] = []
-            transitions[(set(state), symbol)].append(next_state)
+            if (state, symbol) not in transitions:
+                transitions[(state, symbol)] = []
+            transitions[(state, symbol)].append(next_state)
     return Automaton(n, m, start_states, accept_states, transitions)
 
 def test():
     automaton = Automaton(3, 2, [0], [2], {
-        (0, '1'): [0],
-        (0, '2'): [0],
-        (0, '1'): [1],
-        (1, '2'): [2]
+        (0, 1): [0],
+        (0, 2): [0],
+        (0, 1): [1],
+        (1, 2): [2]
     })
 
     arr=automaton.accepts()
