@@ -1,3 +1,5 @@
+import copy
+
 class Automaton:
     def __init__(self, n, m, start_states, accept_states, transitions):
         self.n = n
@@ -5,38 +7,36 @@ class Automaton:
         self.start_states = set(start_states)
         self.accept_states = set(accept_states)
         self.transitions = transitions
-        self.states_list=[]
+        self.states_list=[list(sorted(start_states))]
         self.new_transitions={}
         self.new_accept_states = set()
 
     def check_if_finish_state(self,state):
         for sub_state in state:
-            if sub_state in accept_states:
-                new_accept_states.append(state)
+            if sub_state in self.accept_states:
+                self.new_accept_states.add(tuple(state))
                 break
         
     def accepts(self):
         current_states = [tuple(sorted(list(self.start_states)))]
-        for i in self.transitions:
-            print(i)
-        quit()
         new_current_states = []
         while len(current_states)!=0:
             for symbol in range (self.m):
-                next_state = []
+                next_state = set()
                 for state in current_states:
                     for sub_state in state:
                         if (sub_state, symbol) in self.transitions:
-                            next_states.append(self.transitions[(sub_stat, symbol)])
+                            next_state.update(self.transitions[(sub_state, symbol)])
                     if len(next_state)!=0:
-                        next_state.sort()
-                        print(next_state)
-                        self.check_if_finish_state(next_state)
-                        self.new_transitions[(state,symbol)]=tuple(next_state)
-                if next_state not in self.states_list:
-                     self.states_list.append(next_state)
-                     new_current_states.append(tuple(next_state))
-            current_states=new_current_states
+                        next_state_copy  = sorted(next_state)
+                        self.check_if_finish_state( next_state_copy)
+                        self.new_transitions[(state,symbol)]=tuple( next_state_copy)
+                if  next_state_copy not in self.states_list:
+                     self.states_list.append( next_state_copy)
+                     new_current_states.append(tuple( next_state_copy))
+            current_states= copy.deepcopy(new_current_states)
+            new_current_states.clear()
+            #print(current_states)
         return self.new_transitions
 
 def read_automaton(file_path):
@@ -57,19 +57,28 @@ def read_automaton(file_path):
 
 def test():
     automaton = Automaton(3, 2, [0], [2], {
-        (0, 1): [0],
-        (0, 2): [0],
-        (0, 1): [1],
-        (1, 2): [2]
+        (0, 0): [0,1],
+        (0, 1): [ 0],
+        (1, 1): [2]
     })
-
-    arr=automaton.accepts()
-    for i in arr:
-        print(i)
-    print("Ok")
+    
+    correct_answer={((0,), 0): (0, 1),
+((0,), 1): (0,),
+((0, 1), 0): (0, 1),
+((0, 1), 1): (0, 2),
+((0, 2), 0): (0, 1),
+((0, 2), 1): (0,)}
+    
+    res = automaton.accepts()
+    
+    assert  correct_answer==res 
+    
+    for key, value in res.items():
+        print(f"{key}: {value}")
 
 def main():
     test()
 
 if __name__ == "__main__":
     main()
+
