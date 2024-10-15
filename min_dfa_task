@@ -87,7 +87,7 @@ class Automaton:
             if any(i in self.finish_states for i in components_dict[new_q]):
                 new_finish_states.add(new_q)
             for symbolnum in self.symbols:
-                for current_q in range(self.n):
+                for current_q in components_dict[new_q]:
                     if (current_q, symbolnum) in self.transitions:
                         new_transitions[(new_q, symbolnum)] = Ncom[self.transitions[(current_q, symbolnum)]] - 1
 
