@@ -99,10 +99,10 @@ class Automaton:
         for perm in permutations(range(self.n)):
             is_iso = True
             for state in range(self.n):
-                if perm[state] in other.start_states != (state in self.start_states):
+                if (perm[state] in other.start_states) != (state in self.start_states):
                     is_iso = False
                     break
-                if perm[state] in other.finish_states != (state in self.finish_states):
+                if (perm[state] in other.finish_states) != (state in self.finish_states):
                     is_iso = False
                     break
 
@@ -114,6 +114,13 @@ class Automaton:
                 if is_iso:
                     return True
         return False
+    def ckeck_min_dfa_accepts_all(self):
+        if self.n != 1:
+            return False
+        for symbol in self.symbols:
+            if (0, symbol ) not in  self.transitions:
+                return False
+        return True
 
 def read_automaton(file_path):
     with open(file_path, 'r') as file:
@@ -141,6 +148,8 @@ def test_automaton_minimization():
         (1, '1'): 1
     })
     automaton2 = automaton.min_automaton()
+    assert  not automaton2.ckeck_min_dfa_accepts_all(), "Test failed!"
+    
     automaton_min = Automaton(2, 2, [0], [1], {
         (0, '1'): 1,
         (0, '2'): 1,
@@ -148,15 +157,6 @@ def test_automaton_minimization():
         (1, '1'): 1
     })
     assert automaton2.is_isomorphic(automaton_min), "Test failed!"
-    # expected_automaton = Automaton(3, 2, [0], [1, 2], {
-    #     (0, '1'): 2,
-    #     (2, '1'): 2,
-    #     (2, '2'): 2,
-    #     (0, '2'): 1,
-    #     (1, '2'): 2,
-    #     (1, '1'): 1
-    # })
-    # assert automaton2.is_isomorphic(expected_automaton), "Test failed!"
     print("Minimization test passed!")
 
 def main():
